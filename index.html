@@ -1,41 +1,25 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="utf-8">
-  <title>Guess a Number Game</title>
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <script src="guessanumber4.js"></script>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Guess a Number Game</title>
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<script src="guessanumber4.js"></script>
 </head>
 <body>
-  <h1>Guess a Number Game</h1>
-  <p>Enter a number between 1 and 100:</p>
-  <input type="text" id="guess" />
-  <br />
-  <br />
-  <button id="startBtn">Start Game</button>
-  <button id="guessBtn" disabled>Enter a Guess</button>
-  <button id="resetBtn" disabled>Reset the Game</button>
-  <p id="message"></p>
-  <script>
-    $(document).ready(function() {
-      var numGuesses = 0;
-      var gameId = 0;
-      var maxGuesses = 5;
-
-      function checkInput() {
-        if ($('#guess').val() == '') {
-          return false;
-        }
-        if (isNaN($('#guess').val())) {
-          return false;
-        }
-        if ($('#guess').val() < 1 || $('#guess').val() > 100) {
-          return false;
-        }
-        return true;
-      }
-
-      function clearGame() {
-        $('#guess').val('');
-        $('#guessBtn').prop('disabled', true);
-        $('#resetBtn').prop('disabled', true
+	<h1>Guess a Number Game</h1>
+	<div>
+		<label for="gameNumber">Game Number:</label>
+		<input type="text" id="gameNumber" name="gameNumber" value="" readonly>
+	</div>
+	<div>
+		<label for="guessNumber">Enter a Guess:</label>
+		<input type="text" id="guessNumber" name="guessNumber" disabled>
+		<button id="makeGuess" disabled>Guess</button>
+		<button id="resetGame" disabled>Reset the Game</button>
+	</div>
+	<div id="gameStatus"></div>
+	<button id="startGame">Start Game</button>
+</body>
+</html>
