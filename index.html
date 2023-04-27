@@ -1,40 +1,77 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
-	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
-	<style> .btn{border:1px solid black; padding:5px;display:inline-block} </style>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Guess a Number Game</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
-	<h1>Guess a number</h1>
-	<p>Press the following button to start the game</p>
-	<input type="button" class="btn btn-primary" id="btn_start_game" value="Start Game">
-	<p></p>
-	<p>After starting the game, enter your guess below and press "Enter" or click "Guess"</p>
-	<input type="text" id="numberGuessed">
-	<input type="button" class="btn btn-primary" id="btn_guess" value="Guess">
-	<div id="gameStatus"></div>
+    <h1>Guess a Number Game</h1>
+    <div id="gameDiv">
+        <label for="gameId">Game Number:</label>
+        <input type="text" id="gameId" name="gameId" value="1" readonly><br><br>
+        <button id="startBtn">Start Game</button>
+        <button id="guessBtn" disabled>Enter a Guess</button>
+        <button id="resetBtn" disabled>Reset the Game</button><br><br>
+        <label for="guess">Guess:</label>
+        <input type="text" id="guess" name="guess"><br><br>
+    </div>
+    <div id="resultDiv"></div>
 
-	<script>
-		// Our API address and port goes here. It can be an IP address or DNS name.
-		// In this case it is the loopback address.
-		var ipAddressAndPort = "127.0.0.1:8080";
-		var gameId, guessMade;
-		
-		$('#btn_start_game').click(function(){
-			gameId = Math.floor(Math.random() * 1000000);
-			$.post('http://' + ipAddressAndPort + '/startGame',{'gameId' : gameId}, function(data){
-				$("#gameStatus").text(data["gameStatus"]);
-			});
-		});
-
-		$('#btn_guess').click(function(){
-			var guess = $("#numberGuessed").val();
-			$.post('http://' + ipAddressAndPort + '/guess',{'gameId' : gameId, 'guess' : guess}, function(data){
-				$("#gameStatus").text(data["gameStatus"]);
-				if (data["win"]) {
-					$("#gameStatus").
+    <script>
+        $(document).ready(function () {
+            var numOfGuesses = 5;
+            var gameId = 1;
+            var numberToGuess = 0;
+            $('#startBtn').click(function () {
+                $('#startBtn').prop('disabled', true);
+                $('#guessBtn').prop('disabled', false);
+                $('#resetBtn').prop('disabled', false);
+                gameId++;
+                $('#gameId').val(gameId);
+                $.post("http://localhost:8080/startGame", {gameId: gameId}, function (data, status) {
+                    alert(data.APIMessage);
+                });
+            });
+            $('#guessBtn').click(function () {
+                var guess = $('#guess').val();
+                if ($.isNumeric(guess) && guess >= 1 && guess <= 100) {
+                    $.get("http://localhost:8080/guessMade", {gameId: gameId, guessMade: guess}, function (data, status) {
+                        $('#resultDiv').html(data.APIMessage);
+                        if (data.APIMessage.includes("correct")) {
+                            $('#guessBtn').prop('disabled', true);
+                            $('#resetBtn').prop('disabled', false);
+                            $('#startBtn').prop('disabled', false);
+                        } else {
+                            numOfGuesses--;
+                            if (numOfGuesses == 0) {
+                                $('#resultDiv').append("<br><br>You lost! The number was " + numberToGuess + ".");
+                                $('#guessBtn').prop('disabled', true);
+                                $('#resetBtn').prop('disabled', false);
+                                $('#startBtn').prop('disabled', false);
+                            } else {
+                                $('#resultDiv').append("<br><br>You have " + numOfGuesses + " guess(es) left.");
+                            }
+                        }
+                    });
+                } else {
+                    alert("Invalid guess. Please enter a number between 1 and 100.");
+                }
+                $('#guess').val("");
+            });
+            $('#resetBtn').click(function () {
+                numOfGuesses = 5;
+                $('#guessBtn').prop('disabled', true);
+                $('#resetBtn').prop('disabled', true);
+                $('#startBtn').prop('disabled', false);
+                $('#resultDiv').empty();
+                $.post("http://localhost:8080/startGame", {gameId: gameId}, function (data, status) {
+                    alert("Restarting the game...");
+                    $('#guess').focus();
+                });
+            });
+        });
+    </script>
+</body>
+</html>
