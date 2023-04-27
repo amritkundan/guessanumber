@@ -1,25 +1,23 @@
 <!DOCTYPE html>
 <html>
-<head>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Guess a Number Game</title>
-	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-	<script src="guessanumber4.js"></script>
-</head>
-<body>
-	<h1>Guess a Number Game</h1>
-	<div>
-		<label for="gameNumber">Game Number:</label>
-		<input type="text" id="gameNumber" name="gameNumber" value="" readonly>
-	</div>
-	<div>
-		<label for="guessNumber">Enter a Guess:</label>
-		<input type="text" id="guessNumber" name="guessNumber" disabled>
-		<button id="makeGuess" disabled>Guess</button>
-		<button id="resetGame" disabled>Reset the Game</button>
-	</div>
-	<div id="gameStatus"></div>
-	<button id="startGame">Start Game</button>
-</body>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Guess a number game</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
+  </head>
+  <body>
+    <h1>Guess a number</h1>
+    <p>Press the following button to start the game</p>
+    <input type="button" class="btn btn-primary" id="btn_start_game" value="Start Game">
+    <p></p>
+    <p>After starting the game, enter your guess below and press "Enter" to try this guess</p>
+    <input type="text" id="numberGuessed">
+    <input type="button" class="btn btn-primary" id="btn_guess" value="Press here to try this guess" >
+
+    <script src="guessanumber4.js"></script>
+  </body>
 </html>
