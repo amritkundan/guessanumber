@@ -1,69 +1,45 @@
-// declare a variable to store the maximum number of guesses
-const maxGuesses = 5;
+// HelloWorld1.js - a simple API running on Node.js and using Express
+const express = require('express');
+const app = express();
+app.use(express.urlencoded({extended: false}));
+app.use(express.json());
 
-// declare an object to store the game state
-const gameState = {};
+let randomNumber = [];
 
-// app.post() handler for starting a new game
+app.use(function(req, res, next) {
+  express.urlencoded({extended: false});
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, DELETE');
+  next();
+});
+
 app.post('/startGame', function(req,res){
   const gameId = req.body.gameId;
   const randomNumberGenerated = Math.floor(Math.random() * 100) + 1; 
-  console.log('Creating game number. ' + gameId + ' The number to guess is ' + randomNumberGenerated);
-
-  // initialize the game state for this game ID
-  gameState[gameId] = {
-    numberToGuess: randomNumberGenerated,
-    guessesRemaining: maxGuesses,
-    gameOver: false
-  };
-
-  const responseMessage = { APIMessage: new String('Game number ' + gameId + ' has started') };
-  res.json(responseMessage);                                                                                                                     
+  randomNumber[gameId] = randomNumberGenerated;
+  console.log(`Creating game number ${gameId}. The number to guess is ${randomNumberGenerated}`);
+  responseMessage = { APIMessage: new String(`Game number ${gameId} has started`) };
+  res.json(responseMessage);
 });
 
-// app.get() handler for processing a guess
 app.get('/guessMade', function(req,res){
   const gameId = req.query.gameId;
-  const numberToGuess = gameState[gameId].numberToGuess;
+  const numberToGuess = randomNumber[gameId];
   const numberGuessed = req.query.guessMade;
-  let responseMessage = '';
-
-  // check if the game is already over
-  if (gameState[gameId].gameOver) {
-    responseMessage = { APIMessage: new String('The game is already over. Start a new game.') };
+  let responseMessage = "";
+    
+  if (numberGuessed < numberToGuess) {
+    responseMessage = { APIMessage: new String('Your guess is too low - try again') };
+  } else if (numberGuessed > numberToGuess) {
+    responseMessage = { APIMessage: new String('Your guess is too high - try again') };
   } else {
-    // check if the guess is correct
-    if (numberGuessed == numberToGuess) {
-      responseMessage = { APIMessage: new String('Your guess is correct!') };
-      gameState[gameId].gameOver = true;
-    } else {
-      // check if the guess is too high or too low
-      gameState[gameId].guessesRemaining--;
-      if (numberGuessed < numberToGuess) {
-        responseMessage = { APIMessage: new String('Your guess is too low - try again. ' + gameState[gameId].guessesRemaining + ' guesses remaining.') };
-      } else if (numberGuessed > numberToGuess) {
-        responseMessage = { APIMessage: new String('Your guess is too high - try again. ' + gameState[gameId].guessesRemaining + ' guesses remaining.') };
-      }
-      // check if the player has run out of guesses
-      if (gameState[gameId].guessesRemaining == 0) {
-        responseMessage = { APIMessage: new String('You ran out of guesses. The number was ' + numberToGuess + '. Game over.') };
-        gameState[gameId].gameOver = true;
-      }
-    }
+    responseMessage = { APIMessage: new String('Your guess is correct!') };
   }
 
-  console.log("Game number " + gameId + " guessed " + numberGuessed + ' The number to guess is ' + numberToGuess + '.');
-  res.json(responseMessage);                                                                                                                     
+  console.log(`Game number ${gameId} guessed ${numberGuessed}. The number to guess is ${numberToGuess}.`);
+  res.json(responseMessage);
 });
 
-// app.post() handler for resetting the game
-app.post('/resetGame', function(req,res){
-  const gameId = req.body.gameId;
-  console.log('Resetting game number ' + gameId);
-
-  // reset the game state for this game ID
-  gameState[gameId] = undefined;
-
-  const responseMessage = { APIMessage: new String('Game number ' + gameId + ' has been reset') };
-  res.json(responseMessage);                                                                                                                     
-});
+console.log('Listening on port 8080');
+app.listen(8080);
